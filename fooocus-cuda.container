@@ -1,0 +1,40 @@
+[Unit]
+Description=fooocus quadlet
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=fooocus
+Image=ghcr.io/lllyasviel/fooocus
+PublishPort=7865:7865
+AutoUpdate=registry
+Volume=/etc/localtime:/etc/localtime:ro
+Volume=%h/podman/ai-data:/content/data:z
+Network=pasta
+Environment=DATADIR=/content/data
+Environment=config_path=/content/data/config.txt
+Environment=config_example_path=/content/data/config_modification_tutorial.txt
+Environment=path_checkpoints=/content/data/models/checkpoints/
+Environment=path_loras=/content/data/models/loras/
+Environment=path_embeddings=/content/data/models/embeddings/
+Environment=path_vae_approx=/content/data/models/vae_approx/
+Environment=path_upscale_models=/content/data/models/upscale_models/
+Environment=path_inpaint=/content/data/models/inpaint/
+Environment=path_controlnet=/content/data/models/controlnet/
+Environment=path_clip_vision=/content/data/models/clip_vision/
+Environment=path_fooocus_expansion=/content/data/models/prompt_expansion/fooocus_expansion/
+Environment=path_outputs=/content/app/outputs/
+Environment=WANTED_UID=1000
+Environment=WANTED_GID=1000
+PodmanArgs=--userns=keep-id
+PodmanArgs=--security-opt=no-new-privileges
+PodmanArgs=--device nvidia.com/gpu=all 
+PodmanArgs=--cap-drop=ALL
+PodmanArgs=--security-opt label=type:nvidia_container_t
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
