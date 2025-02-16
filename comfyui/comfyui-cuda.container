@@ -1,0 +1,25 @@
+[Unit]
+Description=comfyui quadlet
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=comfyui
+Image=docker.io/mmartial/comfyui-nvidia-docker:latest
+PublishPort=8188:8188
+AutoUpdate=registry
+Volume=/etc/localtime:/etc/localtime:ro
+Volume=%h/podman/ai-data:/comfy/mnt:z
+Network=pasta
+Environment=WANTED_UID=1000
+Environment=WANTED_GID=1000
+Environment=SECURITY_LEVEL=normal
+PodmanArgs=--userns=keep-id
+PodmanArgs=--device nvidia.com/gpu=all 
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
