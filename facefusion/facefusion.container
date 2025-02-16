@@ -1,0 +1,27 @@
+[Unit]
+Description=facefusion quadlet
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=facefusion
+Image=localhost/facefusion-docker_facefusion-cuda
+PublishPort=7870:7860
+AutoUpdate=registry
+Volume=/etc/localtime:/etc/localtime:ro
+Volume=%h/podman/facefusion/assets:/facefusion/.assets
+Volume=%h/podman/facefusion/caches:/facefusion/.caches
+Volume=%h/podman/facefusion/jobs:/facefusion/.jobs
+Network=pasta
+PodmanArgs=--device nvidia.com/gpu=all 
+Exec=/bin/python facefusion.py run 
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+ExecStartPre=rm -rf %h/podman/facefusion/facefusion-docker
+ExecStartPre=git clone https://github.com/facefusion/facefusion-docker.git %h/podman/facefusion/facefusion-docker
+ExecStartPre=podman-compose -f %h/podman/facefusion/facefusion-docker/docker-compose.cuda.yml build
+
+[Install]
+WantedBy=default.target
